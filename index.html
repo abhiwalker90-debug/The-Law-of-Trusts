@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trusts Law Quiz — Chamberlain</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e11;
+    --surface: #13151a;
+    --card: #1a1d24;
+    --border: #2a2d36;
+    --accent: #c8a96e;
+    --accent-dim: rgba(200,169,110,0.15);
+    --correct: #4caf7d;
+    --correct-dim: rgba(76,175,125,0.12);
+    --wrong: #e05757;
+    --wrong-dim: rgba(224,87,87,0.12);
+    --text: #e8e4dc;
+    --muted: #7a7d88;
+    --tag: #2f3240;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 400px; height: 200px;
+    background: radial-gradient(ellipse, rgba(200,169,110,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .course-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  h1 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+  .subtitle {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    max-width: 860px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .tag-btn {
+    background: var(--tag);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.75rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tag-btn:hover { color: var(--text); border-color: var(--accent); }
+  .tag-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  .score-board {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .score-board span { color: var(--accent); font-weight: 500; }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    max-width: 860px;
+    margin: 0 auto 2rem;
+    padding: 0 1.5rem;
+  }
+  .progress-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── QUIZ CONTAINER ── */
+  #quiz-container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* ── QUESTION CARD ── */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    animation: fadeUp 0.35s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-header {
+    padding: 1.25rem 1.5rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .q-num {
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding-top: 0.15rem;
+    white-space: nowrap;
+    min-width: 3.5rem;
+  }
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--text);
+    line-height: 1.5;
+    flex: 1;
+  }
+  .q-topic {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--tag);
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 0.15rem;
+  }
+
+  .q-options {
+    padding: 1rem 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .opt-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .opt-btn:hover:not([disabled]) {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .opt-key {
+    font-size: 0.65rem;
+    color: var(--muted);
+    background: var(--tag);
+    border-radius: 2px;
+    padding: 0.1rem 0.4rem;
+    min-width: 1.4rem;
+    text-align: center;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+  .opt-btn.correct {
+    border-color: var(--correct);
+    background: var(--correct-dim);
+  }
+  .opt-btn.correct .opt-key { background: var(--correct); color: #fff; }
+  .opt-btn.wrong {
+    border-color: var(--wrong);
+    background: var(--wrong-dim);
+  }
+  .opt-btn.wrong .opt-key { background: var(--wrong); color: #fff; }
+  .opt-btn[disabled] { cursor: default; }
+
+  .q-explanation {
+    margin: 0 1.5rem 1.25rem;
+    padding: 0.75rem 1rem;
+    border-left: 2px solid var(--accent);
+    background: var(--accent-dim);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.78rem;
+    color: var(--text);
+    line-height: 1.6;
+    display: none;
+  }
+  .q-explanation.show { display: block; }
+  .q-explanation strong { color: var(--accent); }
+
+  /* ── SUMMARY ── */
+  #summary {
+    display: none;
+    max-width: 860px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 4rem;
+  }
+  #summary.show { display: block; }
+  .summary-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  .summary-score {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    color: var(--accent);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .summary-score span { font-size: 1.5rem; color: var(--muted); }
+  .summary-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.5rem;
+  }
+  .summary-grade {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    margin: 1.5rem 0 0.5rem;
+    color: var(--text);
+  }
+  .summary-msg {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+  .restart-btn {
+    background: var(--accent);
+    color: #0d0e11;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .restart-btn:hover { opacity: 0.85; }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="course-label">LAW — Winter 2026 · Chamberlain</p>
+  <h1>The Law of <em>Trusts</em></h1>
+  <p class="subtitle">50 exam-style questions · Multiple choice</p>
+</header>
+
+<div class="controls">
+  <div class="filter-group" id="filter-group">
+    <button class="tag-btn active" data-filter="all">All Topics</button>
+    <button class="tag-btn" data-filter="express">Express Trusts</button>
+    <button class="tag-btn" data-filter="certainties">Three Certainties</button>
+    <button class="tag-btn" data-filter="constitution">Constitution</button>
+    <button class="tag-btn" data-filter="administration">Administration</button>
+    <button class="tag-btn" data-filter="remedies">Remedies</button>
+    <button class="tag-btn" data-filter="resulting">Resulting Trusts</button>
+    <button class="tag-btn" data-filter="constructive">Constructive Trusts</button>
+    <button class="tag-btn" data-filter="charitable">Charitable Trusts</button>
+    <button class="tag-btn" data-filter="purpose">Purpose Trusts</button>
+    <button class="tag-btn" data-filter="cases">Case Law</button>
+  </div>
+  <div class="score-board">Score: <span id="score-display">0</span> / <span id="answered-display">0</span></div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="progress-label">
+    <span id="progress-text">0 of 0 answered</span>
+    <span id="progress-pct">0%</span>
+  </div>
+</div>
+
+<div id="quiz-container"></div>
+<div id="summary">
+  <div class="summary-card">
+    <div class="summary-score" id="final-score">0<span>/0</span></div>
+    <div class="summary-label">Final Score</div>
+    <div class="summary-grade" id="final-grade">—</div>
+    <div class="summary-msg" id="final-msg"></div>
+    <button class="restart-btn" onclick="restart()">Restart Quiz</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  // ── EXPRESS TRUSTS ──
+  {
+    topic: "express",
+    label: "Express Trusts",
+    q: "Which of the following correctly identifies the four requirements for creating a valid express trust?",
+    opts: [
+      "Capacity, consideration, certainty of intention, and registration",
+      "Capacity, constitution, three certainties, and formal requirements",
+      "Offer, acceptance, consideration, and certainty of objects",
+      "Delivery, acceptance, three certainties, and registration"
+    ],
+    ans: 1,
+    exp: "An express trust requires: (1) the settlor has legal capacity, (2) proper constitution by transfer of property to the trustee, (3) the three certainties (intention, subject matter, objects), and (4) any requisite formalities."
+  },
+  {
+    topic: "express",
+    label: "Express Trusts",
+    q: "In a discretionary trust, what discretion does the trustee have?",
+    opts: [
+      "Whether to administer the trust at all",
+      "Whether to accept appointment as trustee",
+      "Who receives the trust property and/or in what shares",
+      "Whether the trust instrument should be in writing"
+    ],
+    ans: 2,
+    exp: "In a discretionary trust, the settlor allows the trustee to decide who will receive the trust property and/or in what shares or proportions. The trustee has no discretion in a fixed trust."
+  },
+  {
+    topic: "express",
+    label: "Express Trusts",
+    q: "What is the key feature of a 'bare trust'?",
+    opts: [
+      "The trustee holds both legal and equitable title",
+      "The settlor holds beneficial title and gives away legal title",
+      "The trust has no written instrument",
+      "The beneficiary is unknown at the time of creation"
+    ],
+    ans: 1,
+    exp: "In a bare trust, the settlor holds beneficial title and gives away legal title. The idea is to receive the benefits of the property without having to manage it themselves."
+  },
+  {
+    topic: "express",
+    label: "Express Trusts",
+    q: "Which of the following is NOT a right held by a beneficiary 'in personam' against the trustee?",
+    opts: [
+      "Right to compel proper administration",
+      "Right to information about administration",
+      "Right to collapse the trust under Saunders v Vautier",
+      "Right to compensation for losses from breach of trust"
+    ],
+    ans: 2,
+    exp: "The right to collapse the trust under Saunders v Vautier is a right in rem (against the trust property itself). Rights in personam against the trustee include compelling proper administration, enjoining improper distribution, obtaining information, and compensation for breach."
+  },
+  {
+    topic: "express",
+    label: "Express Trusts",
+    q: "Who is 'Equity's darling' and what is their significance?",
+    opts: [
+      "The settlor; they can always revoke the trust",
+      "The trustee; they are immune from breach claims",
+      "A bona fide purchaser for value without notice; they take free of the trust",
+      "The court; it has ultimate control over trust administration"
+    ],
+    ans: 2,
+    exp: "Equity's darling is the bona fide purchaser for value without notice. If a trustee sells property to such a buyer, the buyer keeps the property free of the trust. The beneficiaries are not without remedy — they can still sue the trustee for breach — but their interest in the property is lost."
+  },
+
+  // ── THREE CERTAINTIES ──
+  {
+    topic: "certainties",
+    label: "Three Certainties",
+    q: "What is a 'precatory trust' and what is its legal effect?",
+    opts: [
+      "A trust created in secret; it is enforceable as a constructive trust",
+      "A trust using non-mandatory language ('wish', 'desire'); it is not a valid trust",
+      "A trust with no beneficiaries; it fails for certainty of objects",
+      "A trust created orally; it is unenforceable for land"
+    ],
+    ans: 1,
+    exp: "A precatory trust uses non-mandatory language such as 'fervent wish,' 'desire,' 'hope,' or 'recommendation.' This creates a mere moral obligation, not a legal one. The gift goes to the first recipient with no binding obligation to use it as directed."
+  },
+  {
+    topic: "certainties",
+    label: "Three Certainties",
+    q: "In Re Adams and the Kensington Vestry, the testator left property to his wife 'in full confidence' she would use it for the children. What did the court hold?",
+    opts: [
+      "A valid discretionary trust was created",
+      "An absolute gift was made with merely moral obligations",
+      "A resulting trust arose because intention was uncertain",
+      "The children had enforceable rights in personam"
+    ],
+    ans: 1,
+    exp: "The court held it was an absolute gift to the wife with only moral obligations — not a legally binding trust. The onus is on the beneficiaries to prove intention, and 'in full confidence' was insufficient to create a mandatory obligation."
+  },
+  {
+    topic: "certainties",
+    label: "Three Certainties",
+    q: "Palmer v Simmonds established that what type of language makes the subject matter of a trust uncertain?",
+    opts: [
+      "Language referring to a specific percentage of an estate",
+      "Language referring to 'the bulk' of a fund",
+      "Language referring to 'the residue' of an estate",
+      "Language describing property by address"
+    ],
+    ans: 1,
+    exp: "In Palmer v Simmonds, the term 'the bulk' was deemed too vague and subjective to identify a clear and definite portion of the estate. Vague or subjective language that makes trust property unascertainable will void the trust."
+  },
+  {
+    topic: "certainties",
+    label: "Three Certainties",
+    q: "What test applies to determine certainty of objects for a FIXED trust?",
+    opts: [
+      "Individual ascertainability — can you say if any given person is or is not in the class",
+      "Class ascertainability — must be possible to make a complete list of every beneficiary",
+      "Administrative workability — the class cannot be so large the trust cannot function",
+      "Conceptual certainty — can you understand the words chosen by the settlor"
+    ],
+    ans: 1,
+    exp: "Fixed trusts require the 'complete list' or 'class ascertainability' test established in IRC v Broadway Cottages: it must be possible to identify every single member of the class. The trustee knows exactly who the beneficiaries are and what they receive."
+  },
+  {
+    topic: "certainties",
+    label: "Three Certainties",
+    q: "The test from McPhail v Doulton for certainty of objects in discretionary trusts asks:",
+    opts: [
+      "Can you make a complete and closed list of all beneficiaries?",
+      "Is it possible to say of any given person whether they are or are not a member of the class?",
+      "Would an ordinary person understand the purpose of the trust?",
+      "Is the class numerically small enough to be administratively manageable?"
+    ],
+    ans: 1,
+    exp: "McPhail v Doulton replaced the complete list test for discretionary trusts with the individual ascertainability test: 'Is it possible to say that any given person is or is not a member of a class?' Conceptual certainty is required; evidentiary certainty comes later. Administrative unworkability can still invalidate the trust."
+  },
+  {
+    topic: "certainties",
+    label: "Three Certainties",
+    q: "Hunter v Moss held that shares in a company could be the certain subject matter of a trust without segregation. What was the key reason?",
+    opts: [
+      "The beneficiary had already taken possession",
+      "All shares were identical and equal in value, so segregation was unnecessary",
+      "The trust was created before any third-party claim arose",
+      "The settlor had declared the trust in writing"
+    ],
+    ans: 1,
+    exp: "In Hunter v Moss, the 50 shares were all identical and equal in value, so there was no need to segregate them. This distinguishes it from Re London Wine Co (Shippers) where the goods were physically different and identification of specific units was required."
+  },
+
+  // ── CONSTITUTION ──
+  {
+    topic: "constitution",
+    label: "Constitution",
+    q: "The rule in Milroy v Lord provides that:",
+    opts: [
+      "A court will perfect an imperfect gift if the settlor clearly intended it",
+      "For a trust to be made, the settlor must have done everything necessary to transfer legal title; equity will not perfect an imperfect gift",
+      "An intention to transfer operates automatically as a declaration of trust",
+      "A constructive trust will always save a failed express trust"
+    ],
+    ans: 1,
+    exp: "Milroy v Lord establishes that for a trust to be valid, the settlor must have done everything that, according to the nature of the property, was necessary for them to do to transfer legal title. Equity will not step in to save an imperfect gift, and an intention to transfer does not operate as a declaration of trust."
+  },
+  {
+    topic: "constitution",
+    label: "Constitution",
+    q: "The 'Every Effort Rule' from Re Rose applies where:",
+    opts: [
+      "The settlor has done everything within their power to transfer title, but the transfer is delayed by a third party's act",
+      "The trustee has accepted appointment and begun administering the trust",
+      "The beneficiary has relied to their detriment on the settler's promise",
+      "The court orders specific performance of the transfer agreement"
+    ],
+    ans: 0,
+    exp: "Re Rose holds that if a donor has done everything they could possibly do to transfer legal title (i.e., everything required of them), but the transfer is delayed by a step that requires a third party's act (e.g., company registration), the transfer is effective in equity from the moment the donor completed their part. A constructive trust bridges the gap."
+  },
+  {
+    topic: "constitution",
+    label: "Constitution",
+    q: "In Carson v Wilson, the court held that signing a deed designed to take effect on death showed:",
+    opts: [
+      "An intention to create an inter vivos trust",
+      "An intention to make a gift, not create a trust",
+      "A valid secret testamentary trust",
+      "A declaration of trust over the property"
+    ],
+    ans: 1,
+    exp: "In Carson v Wilson, signing a deed to come into effect upon death showed an intention to make a gift, not to create a trust. A failed gift is not converted into a trust by the court."
+  },
+  {
+    topic: "constitution",
+    label: "Constitution",
+    q: "Paul v Constance established that for a valid self-declaration of trust:",
+    opts: [
+      "The words 'I hold this on trust' must be explicitly used",
+      "A written instrument signed by the settlor is mandatory",
+      "Clear evidence of intention is sufficient; sophisticated legal terminology is not required",
+      "The beneficiary must provide consideration"
+    ],
+    ans: 2,
+    exp: "In Paul v Constance, Mr. Constance repeatedly said the money was 'as much yours as mine.' The court held that for a self-declaration of trust, clear evidence of intention is sufficient — sophisticated legal terminology is not required when the intention is nonetheless clear."
+  },
+  {
+    topic: "constitution",
+    label: "Constitution",
+    q: "What is the doctrine in Strong v Bird?",
+    opts: [
+      "A trustee who becomes a beneficiary can collapse the trust",
+      "If a person intended to gift property but did not perfect it, and that person later becomes executor, the gift is perfected by vesting on death",
+      "An incomplete gift can be perfected by proprietary estoppel",
+      "A trust can be declared orally over real property"
+    ],
+    ans: 1,
+    exp: "Strong v Bird holds that if the intended recipient of an imperfect gift later becomes the executor under the donor's will, the gift is deemed complete. Property vests in the executor under the will for distribution, so the gift is perfected even if it was not completed during the donor's lifetime."
+  },
+
+  // ── ADMINISTRATION ──
+  {
+    topic: "administration",
+    label: "Administration",
+    q: "Under the Saunders v Vautier rule, when can beneficiaries collapse a trust?",
+    opts: [
+      "At any time, provided at least one beneficiary requests it",
+      "Only with court approval and good reason",
+      "Where all beneficiaries have full legal capacity and collectively hold the entire beneficial interest",
+      "Only after the trust has been administered for 21 years"
+    ],
+    ans: 2,
+    exp: "Under Saunders v Vautier, where the beneficiary (or all beneficiaries together) has an absolute indefeasible interest, is of full legal capacity, and collectively holds the entire beneficial interest, they can demand termination of the trust and delivery of the property."
+  },
+  {
+    topic: "administration",
+    label: "Administration",
+    q: "What is the standard of care for a trustee when making investments?",
+    opts: [
+      "The care of a person of ordinary prudence managing their own affairs",
+      "The care of a person of ordinary prudence managing the affairs of another person",
+      "The highest possible standard — strict liability for any loss",
+      "The standard of a reasonable person with no financial expertise"
+    ],
+    ans: 1,
+    exp: "Learoyd v Whiteley established that the investment standard is that of 'a person of ordinary prudence managing the affairs of another person' — higher than managing your own affairs — because the trustee is investing for someone else's benefit and must not be unduly speculative."
+  },
+  {
+    topic: "administration",
+    label: "Administration",
+    q: "In Fales v Canada Permanent Trust (SCC), what was the court's holding regarding the standard of care for professional vs. non-professional trustees?",
+    opts: [
+      "Professional trustees are held to a higher standard than lay trustees",
+      "There is an equal standard of care; however, the court may relieve a lay trustee under the statutory defence if they acted honestly and reasonably",
+      "Non-professional trustees are held to a lower standard and have no liability",
+      "Only professional trustees can be found liable for breach of trust"
+    ],
+    ans: 1,
+    exp: "In Fales, the SCC held there is an equal objective standard of care. However, the court relieved the lay trustee (the widow) from liability under the statutory defence because she had limited financial experience, acted honestly, and the corporate trustee had failed to properly inform her."
+  },
+  {
+    topic: "administration",
+    label: "Administration",
+    q: "What is the legal effect of Re Brockbank regarding beneficiaries' ability to direct trustee appointments?",
+    opts: [
+      "Beneficiaries can direct the trustee to appoint a specific replacement trustee",
+      "The court will always defer to beneficiary preferences in trustee appointments",
+      "The remaining trustee must exercise independent judgment; beneficiaries cannot compel a specific appointment",
+      "Beneficiaries holding full beneficial interest can appoint any trustee they choose"
+    ],
+    ans: 2,
+    exp: "In Re Brockbank, the court held that appointment of a substitute trustee is the job of the remaining trustee, who must exercise independent fiduciary judgment. Beneficiaries cannot compel a trustee to exercise their discretionary power of appointment in a particular way. If they want more control, they must collapse the trust under Saunders v Vautier."
+  },
+  {
+    topic: "administration",
+    label: "Administration",
+    q: "Under what circumstances can a trustee be removed by the court?",
+    opts: [
+      "Whenever a majority of beneficiaries requests removal",
+      "Only where the trustee has been convicted of a criminal offence",
+      "Where the trustee's continuance jeopardizes assets, risks beneficiary welfare, or prevents proper execution of the trust",
+      "Whenever there is friction between trustees and beneficiaries"
+    ],
+    ans: 2,
+    exp: "Removal is justified (and may be ordered under s. 5 of the Trustee Act) where the trustee's continuance jeopardizes trust assets, puts beneficiary welfare at risk, or prevents the trust from being properly executed. Mere friction or disagreement (Conroy v Stokes) is not sufficient."
+  },
+  {
+    topic: "administration",
+    label: "Administration",
+    q: "The duty of impartiality requires a trustee to:",
+    opts: [
+      "Treat all investments equally regardless of their type",
+      "Have an even hand between different classes of beneficiaries (e.g., life tenants and remaindermen)",
+      "Consult all beneficiaries before making any investment decision",
+      "Distribute income equally between all beneficiaries regardless of the trust terms"
+    ],
+    ans: 1,
+    exp: "The duty of impartiality (even-handedness) requires a trustee to balance the competing interests of different beneficiaries — particularly between life tenants (who benefit from income) and remainder beneficiaries (who benefit from capital preservation). Failure to act impartially is a breach of trust."
+  },
+  {
+    topic: "administration",
+    label: "Administration",
+    q: "Cowan v Scargill held that trustees of a pension fund:",
+    opts: [
+      "May prioritize non-financial ethical considerations if a majority of beneficiaries agree",
+      "Must act in the beneficiaries' best financial interests; non-financial considerations are secondary",
+      "Are prohibited from investing in any foreign companies",
+      "May refuse to make investments they personally find unethical without breaching their duty"
+    ],
+    ans: 1,
+    exp: "In Cowan v Scargill, the court held that the best interests of beneficiaries of a pension fund are their financial interests. Non-financial considerations can only be taken into account where they align with equally good financial options. Trustees cannot let ethical considerations override their duty to maximize financial returns."
+  },
+
+  // ── REMEDIES ──
+  {
+    topic: "remedies",
+    label: "Remedies & Tracing",
+    q: "What is the key difference between 'following' and 'tracing' as proprietary remedies?",
+    opts: [
+      "Following tracks the location of a specific asset; tracing tracks the value of an asset through substitutions",
+      "Following is an equitable remedy; tracing is a common law remedy",
+      "Following requires a fiduciary relationship; tracing does not",
+      "Following applies to personal property; tracing applies to real property"
+    ],
+    ans: 0,
+    exp: "Following is the process of determining the location of a specific asset — the asset itself. Tracing is the process of determining the location of the VALUE of an asset through substitution — where the asset has been sold or converted into something else. Both are processes, not causes of action."
+  },
+  {
+    topic: "remedies",
+    label: "Remedies & Tracing",
+    q: "Under the rule in Re Hallett's Estate, how does a court treat withdrawals from a mixed fund?",
+    opts: [
+      "Withdrawals come out proportionally from trust and personal funds",
+      "The first money withdrawn is presumed to be the trust money (first in, first out)",
+      "Withdrawals are presumed to be the trustee's own money; trust funds remain in the account",
+      "Withdrawals are allocated equally between all parties claiming in the fund"
+    ],
+    ans: 2,
+    exp: "Re Hallett's Estate establishes that where a fiduciary has mixed trust funds with their own and then makes withdrawals, the court presumes the fiduciary spent their own money first. The fiduciary cannot rely on their own wrongdoing to defeat the beneficiary's claim."
+  },
+  {
+    topic: "remedies",
+    label: "Remedies & Tracing",
+    q: "The rule in Re Oatway allows the beneficiary to:",
+    opts: [
+      "Claim that the trust money was spent last, tracing it into the dissipated funds",
+      "Claim that the trust money was spent first, tracing it into a profitable investment made before dissipation",
+      "Apply Clayton's case to maximize their recovery",
+      "Obtain a lien over all of the trustee's assets"
+    ],
+    ans: 1,
+    exp: "Re Oatway allows the beneficiary to claim that the trust money was spent first — the opposite of Re Hallett's — when the money spent first was used on something profitable. The beneficiary picks whichever rule is most advantageous in the circumstances."
+  },
+  {
+    topic: "remedies",
+    label: "Remedies & Tracing",
+    q: "When multiple innocent parties compete in a mixed trust fund, the preferred approach in Canada (per Boughner v Greyhawk) is:",
+    opts: [
+      "Clayton's case (first in, first out)",
+      "Rolling charge where possible; pari passu ex post facto where the Lowest Intermediate Balance rule is unworkable",
+      "Pari passu ex post facto in all cases",
+      "Equal distribution regardless of contribution"
+    ],
+    ans: 1,
+    exp: "Boughner v Greyhawk (affirmed ONCA) holds that the Rolling Charge method is preferred because it is most closely tied to the evidence. Pari passu ex post facto (proportionate sharing based on total contributions) is used only where the Lowest Intermediate Balance is unworkable, such as when there are very large numbers of claimants or transactions."
+  },
+  {
+    topic: "remedies",
+    label: "Remedies & Tracing",
+    q: "What is the Lowest Intermediate Balance Rule?",
+    opts: [
+      "The beneficiary can only recover the lowest amount ever in the trust account",
+      "Beneficiaries are only entitled to the lowest balance in the mixed account since their contribution was deposited",
+      "The trustee is only liable for the minimum amount ever withdrawn",
+      "The court sets damages at the lowest possible level given the circumstances"
+    ],
+    ans: 1,
+    exp: "The Lowest Intermediate Balance Rule limits a beneficiary's proprietary claim to the lowest balance the mixed account has reached since their contribution was deposited. If the account dips below their contribution amount, subsequent deposits do not restore their proprietary claim — they cannot be tied to the claimant's original money."
+  },
+  {
+    topic: "remedies",
+    label: "Remedies & Tracing",
+    q: "In Foskett v McKeown (House of Lords), what did the trust beneficiaries receive when trust funds were used to pay the last two premiums on a life insurance policy?",
+    opts: [
+      "Only a charge/lien for the exact amounts paid as premiums",
+      "Nothing, because the funds were dissipated in paying premiums",
+      "A 2/5 proportionate beneficial interest in the insurance proceeds",
+      "Compensation from the trustee's personal estate"
+    ],
+    ans: 2,
+    exp: "In Foskett v McKeown, trust funds paid 2 of 5 premiums (2/5 of all premiums paid). The House of Lords held that the beneficiaries were entitled to a 2/5 beneficial interest in the insurance proceeds because their money was traced into the insurance policy (a chose in action). The 'windfall' nature of the recovery was irrelevant — the trust beneficiaries had rights to the contract itself."
+  },
+  {
+    topic: "remedies",
+    label: "Remedies & Tracing",
+    q: "Canson Enterprises v Boughton (SCC) concerned the measure of equitable compensation for breach of fiduciary duty. The court generally held that:",
+    opts: [
+      "Equitable damages are identical to common law damages in all respects",
+      "Causation must be established, but foreseeability does not apply; compensation is assessed at the time of trial at the highest possible measure",
+      "Equitable compensation is always higher than common law damages",
+      "Breach of fiduciary duty automatically entitles the plaintiff to an account of profits"
+    ],
+    ans: 1,
+    exp: "For equitable compensation, a causal link must be shown but foreseeability does not apply. The trustee must pay the highest possible amount of loss as calculated at trial (not at the time of breach), reflecting the most favourable position for the beneficiary. The influential dissent of McLaughlin J. has shaped the law significantly."
+  },
+
+  // ── RESULTING TRUSTS ──
+  {
+    topic: "resulting",
+    label: "Resulting Trusts",
+    q: "A purchase money resulting trust arises where:",
+    opts: [
+      "Mortgage installments are paid by someone not on title",
+      "One person provides some or all of the purchase price but legal title is placed in another's name",
+      "Property is transferred gratuitously between relatives",
+      "A trust fails for uncertainty of subject matter"
+    ],
+    ans: 1,
+    exp: "A purchase money resulting trust arises where one person provides some or all of the purchase money to acquire property, but legal title goes into someone else's name. The law presumes the purchaser did not intend a gift, so a resulting trust arises in their favour proportionate to their contribution. Payment of mortgage installments (Nishi v Rascal) is not sufficient."
+  },
+  {
+    topic: "resulting",
+    label: "Resulting Trusts",
+    q: "The presumption of advancement applies in which of the following relationships?",
+    opts: [
+      "Adult child to parent",
+      "Business partners",
+      "Parent to minor child, and husband to wife",
+      "Friends who jointly purchase property"
+    ],
+    ans: 2,
+    exp: "The presumption of advancement (that a gift was intended) applies to transfers from parent to minor child (extended by Pecore to both mothers and fathers) and from husband to wife. It does NOT apply to adult independent children (Pecore), where the presumption of resulting trust applies instead."
+  },
+  {
+    topic: "resulting",
+    label: "Resulting Trusts",
+    q: "In Pecore v Pecore (SCC), the court held that for joint bank accounts with adult children:",
+    opts: [
+      "Presumption of advancement applies because parents always intend to benefit their children",
+      "Presumption of resulting trust applies; the account may have been set up for convenience, not as a gift",
+      "The account automatically vests in the surviving joint owner",
+      "No presumption applies; intent must be proven on a balance of probabilities"
+    ],
+    ans: 1,
+    exp: "Pecore held that for transfers to adult independent children, the presumption of resulting trust applies — not advancement. Joint accounts may be created for the parent's convenience (e.g., to manage their affairs in old age), not to make a gift. Evidence of the parent's intention is critical."
+  },
+  {
+    topic: "resulting",
+    label: "Resulting Trusts",
+    q: "Air Jamaica Ltd v Joy Charlton established that a resulting trust arises from:",
+    opts: [
+      "A positive intention to create a trust",
+      "An absence of any intention to pass a beneficial interest to another beneficiary",
+      "A fraudulent transfer designed to defeat creditors",
+      "A positive intention to retain beneficial interest"
+    ],
+    ans: 1,
+    exp: "Air Jamaica established that a resulting trust responds to the absence of any intention to pass a beneficial interest — NOT to a positive intention to retain it. The focus is on whether the transferor intended to benefit the recipient, not whether they consciously thought about keeping beneficial ownership."
+  },
+  {
+    topic: "resulting",
+    label: "Resulting Trusts",
+    q: "What was the outcome in Re Ames Settlement regarding the failed marriage trust?",
+    opts: [
+      "The property remained with the trustee as they had legal title",
+      "The trust was upheld as a valid purpose trust",
+      "The capital was held on resulting trust for the executors of the settlor's estate",
+      "The beneficiaries received the property despite the failure of the marriage"
+    ],
+    ans: 2,
+    exp: "In Re Ames Settlement, $10,000 was settled on a man on the occasion of his marriage. The marriage was later annulled. The court held that since the express trust failed (the marriage was void), the capital was held on resulting trust for the executors of the settlor's estate."
+  },
+
+  // ── CONSTRUCTIVE TRUSTS ──
+  {
+    topic: "constructive",
+    label: "Constructive Trusts",
+    q: "Pettkus v Becker (SCC) recognized the remedial constructive trust in the context of:",
+    opts: [
+      "A commercial joint venture where one party kept all profits",
+      "An unmarried cohabiting couple where one party enriched at the other's expense through labour",
+      "A testamentary trust that failed for uncertainty of objects",
+      "A breach of confidence in a commercial transaction"
+    ],
+    ans: 1,
+    exp: "Pettkus v Becker arose from a cohabiting relationship where Ms. Becker contributed labour and services for 19 years. The SCC held Pettkus was unjustly enriched (enrichment, corresponding deprivation, no juristic reason) and a remedial constructive trust was awarded giving her a ½ interest in the property and business."
+  },
+  {
+    topic: "constructive",
+    label: "Constructive Trusts",
+    q: "The 'Goode criteria' from Soulous v Korkontzilas identify when a constructive trust (as opposed to money damages) is appropriate for wrongdoing. Which of the following is NOT one of the criteria?",
+    opts: [
+      "The defendant was under an equitable obligation",
+      "The asset in the defendant's hands resulted from their wrongdoing",
+      "The plaintiff suffered a financial loss greater than the defendant's gain",
+      "There is a legitimate reason for seeking a proprietary remedy (e.g., deterrence, insolvency)"
+    ],
+    ans: 2,
+    exp: "The Goode criteria (from Soulous) are: (1) defendant under an equitable obligation; (2) asset resulted from wrongdoing; (3) plaintiff has a legitimate reason for proprietary remedy; (4) no factors rendering the constructive trust unjust. There is no requirement that the plaintiff's loss exceed the defendant's gain."
+  },
+  {
+    topic: "constructive",
+    label: "Constructive Trusts",
+    q: "In Lac Minerals v International Corona Resources (SCC), what type of wrong did Lac Minerals commit?",
+    opts: [
+      "Breach of fiduciary duty, which triggered a constructive trust",
+      "Breach of confidence by misusing geological information to acquire property for itself",
+      "Unjust enrichment through a Quistclose trust arrangement",
+      "Self-dealing by purchasing trust property without consent"
+    ],
+    ans: 1,
+    exp: "Lac Minerals committed a breach of confidence — it received confidential geological information from Corona in circumstances of confidence and misused it by acquiring the property that Corona was seeking. The majority awarded a constructive trust because monetary compensation was inadequate and deterrence required stripping Lac of all gains."
+  },
+  {
+    topic: "constructive",
+    label: "Constructive Trusts",
+    q: "Secret trusts are enforced as constructive trusts primarily because:",
+    opts: [
+      "They satisfy the formal requirements of wills legislation",
+      "Equity perfects the testator's intentions and prevents the trustee from unconscionably keeping the property",
+      "They are express trusts declared orally before death",
+      "The Statute of Frauds requires all trusts to be enforceable"
+    ],
+    ans: 1,
+    exp: "Secret trusts are enforced as constructive trusts because equity will not allow statute to serve a fraudulent purpose. The court perfects the deceased's intentions and prevents the trustee from unconscionably retaining property by denying the trust. The constructive trust does not technically contravene wills legislation."
+  },
+  {
+    topic: "constructive",
+    label: "Constructive Trusts",
+    q: "What are the three requirements for a valid fully secret trust?",
+    opts: [
+      "Written instrument, two witnesses, and communication before death",
+      "Communication of the trust to the recipient, timely communication (before death), and acceptance by the recipient",
+      "Delivery of trust property, acceptance, and court approval",
+      "Offer, acceptance, and consideration from the intended beneficiary"
+    ],
+    ans: 1,
+    exp: "The three requirements for a valid (fully or semi-secret) trust are: (1) the deceased communicates the existence of the trust to the recipient; (2) communication occurs in a timely manner (before death for fully secret; before or contemporaneous with the will for semi-secret); (3) the recipient agrees to hold on trust (acceptance, including silent acquiescence)."
+  },
+  {
+    topic: "constructive",
+    label: "Constructive Trusts",
+    q: "What is the key difference in timing requirements between fully secret and semi-secret trusts?",
+    opts: [
+      "There is no difference; both require communication before the will is executed",
+      "Fully secret trusts require communication before death; semi-secret trusts require communication before or contemporaneously with the will",
+      "Fully secret trusts can be communicated after death; semi-secret trusts must be communicated before",
+      "Both require communication at the same time as the will"
+    ],
+    ans: 1,
+    exp: "For a fully secret trust, communication and acceptance must occur at any point before the testator's death. For a semi-secret trust, communication must occur before or contemporaneously with the execution of the will — because the will itself shows there is a trust, so later instructions would look like an attempt to evade wills legislation."
+  },
+
+  // ── CHARITABLE TRUSTS ──
+  {
+    topic: "charitable",
+    label: "Charitable Trusts",
+    q: "The four heads of charitable purpose established by Morice v Bishop of Durham (following the Statute of Elizabeth) are:",
+    opts: [
+      "Education, religion, health, and animal welfare",
+      "Relief of poverty, advancement of education, advancement of religion, and other purposes beneficial to the community",
+      "Public welfare, environmental protection, education, and religion",
+      "Poverty relief, arts and culture, sport, and religion"
+    ],
+    ans: 1,
+    exp: "The four heads of charitable purpose are: (1) relief of poverty, (2) advancement of education, (3) advancement of religion, and (4) other purposes beneficial to the community. New purposes under the fourth head must be analogous to those in the preamble of the Statute of Elizabeth."
+  },
+  {
+    topic: "charitable",
+    label: "Charitable Trusts",
+    q: "The Oppenheim v Tobacco Securities test for 'public benefit' in charitable trusts provides that the class of beneficiaries must:",
+    opts: [
+      "Number at least 1,000 people to qualify as sufficiently large",
+      "Not be defined by a personal nexus to the settlor (e.g., employment relationship)",
+      "Be geographically distributed across the country",
+      "Include both rich and poor members of the community"
+    ],
+    ans: 1,
+    exp: "Oppenheim held that for a charitable trust, the class must not depend on a personal nexus or relationship to the settlor or a particular individual. An employment nexus (being employed by the settlor's company) was held to defeat the public benefit requirement, even where the class was numerically large."
+  },
+  {
+    topic: "charitable",
+    label: "Charitable Trusts",
+    q: "AYSA v Canada Revenue Agency (SCC) held that amateur sports organizations:",
+    opts: [
+      "Are automatically charitable under the fourth head as purposes beneficial to the community",
+      "Are charitable if they promote health as an ancillary benefit",
+      "Must be connected to another recognized charitable purpose (e.g., poverty relief, education) to be charitable",
+      "Cannot ever be recognized as charitable under Canadian law"
+    ],
+    ans: 2,
+    exp: "AYSA held that sport alone does not qualify as a charitable purpose. Amateur sports organizations must show sport is ancillary to another recognized charitable goal. Expanding charity to include all community sports would be a major policy change better suited to Parliament. AYSA is non-profit but not charitable."
+  },
+  {
+    topic: "charitable",
+    label: "Charitable Trusts",
+    q: "In Gilmour v Coates, why did the court reject the cloistered nuns' trust as charitable?",
+    opts: [
+      "The organization was not incorporated",
+      "Religious worship by a private enclosed community without public works provided no demonstrable public benefit",
+      "The trust was not in writing as required for land",
+      "The object was too uncertain — 'intercessory prayer' was not a legal category"
+    ],
+    ans: 1,
+    exp: "In Gilmour v Coates, the court rejected the trust for cloistered nuns (who performed intercessory prayer but had no public-facing works) because there was no demonstrable public benefit. The presumption of public benefit for religious charities was rebutted. The court would not take judicial notice of the spiritual value of intercessory prayer."
+  },
+  {
+    topic: "charitable",
+    label: "Charitable Trusts",
+    q: "What is the cy-pres doctrine and when does judicial cy-pres apply?",
+    opts: [
+      "A rule that trusts for multiple charities are void; cy-pres redistributes the funds equally",
+      "A doctrine by which courts vary the terms of a will; it applies whenever the court considers the settlor's wishes unreasonable",
+      "A doctrine that redirects charitable trust funds 'as near as possible' to the original purpose where that purpose is impossible or impracticable",
+      "A rule that allows a settlor to revoke a charitable trust within 21 years"
+    ],
+    ans: 2,
+    exp: "Cy-pres ('as near as possible') allows a court to redirect charitable trust funds to a purpose as close as possible to the original where: (1) the specified purpose is initially impossible or impracticable (only available where there is general charitable intent); or (2) the purpose becomes impossible or impracticable after the trust takes effect (applies regardless of general intent — 'once charitable, always charitable')."
+  },
+  {
+    topic: "charitable",
+    label: "Charitable Trusts",
+    q: "Canada Trust Co. v Ontario Human Rights Commission (ONCA) involved a scholarship with racially and religiously discriminatory conditions. The court held:",
+    opts: [
+      "The entire trust failed and the funds resulted back to the estate",
+      "The scholarship was valid because the settlor had a right to impose conditions on their gift",
+      "The offensive conditions were struck using cy-pres; the scholarship was carried out without those provisions",
+      "The court had no jurisdiction to interfere with a private charitable trust"
+    ],
+    ans: 2,
+    exp: "In Canada Trust Co. v Ontario Human Rights Commission, the discriminatory scholarship conditions were held to violate public policy. The court applied cy-pres to remove the offensive restrictions (racial, religious, gender requirements) while preserving the scholarship itself. Charitable trusts in the public sphere must not violate public policy."
+  },
+
+  // ── PURPOSE TRUSTS ──
+  {
+    topic: "purpose",
+    label: "Purpose Trusts",
+    q: "Why are private non-charitable purpose trusts generally invalid?",
+    opts: [
+      "They violate the three certainties because the purpose is always uncertain",
+      "There is no human beneficiary to enforce the trustee's obligations (the beneficiary/enforcer principle)",
+      "Equity does not recognize trusts for purposes at all",
+      "They cannot satisfy the formal requirements of the Statute of Frauds"
+    ],
+    ans: 1,
+    exp: "Private non-charitable purpose trusts are generally invalid because of the beneficiary/enforcer principle from Morice v Bishop of Durham: a valid trust must be enforceable by definite objects (beneficiaries). Without human beneficiaries, there is no one to enforce the trustee's obligations or bring a claim for breach."
+  },
+  {
+    topic: "purpose",
+    label: "Purpose Trusts",
+    q: "A Quistclose trust arises where:",
+    opts: [
+      "A trustee misappropriates funds for an unauthorized purpose",
+      "Money is lent for a specific purpose; if that purpose fails, the money is held on resulting trust for the lender",
+      "A charitable trust cannot be carried out and cy-pres is applied",
+      "A beneficiary takes trust money and uses it for their own benefit"
+    ],
+    ans: 1,
+    exp: "A Quistclose trust (Barclays Bank v Quistclose Investments) arises where money is lent for a specific designated purpose. The money is held on trust for that purpose. If the purpose fails, there is a secondary resulting trust back to the lender. The lender retains a beneficial interest and the money cannot be claimed by the borrower's creditors."
+  },
+  {
+    topic: "purpose",
+    label: "Purpose Trusts",
+    q: "Re Denley's Trust Deed (1969) saved a purpose trust for a sports ground by:",
+    opts: [
+      "Finding that the trust was charitable because sport is beneficial to the community",
+      "Treating the trust as a power rather than an obligation",
+      "Interpreting the employees of the company as the beneficiaries of the trust",
+      "Applying cy-pres to redirect the funds to a legitimate purpose"
+    ],
+    ans: 2,
+    exp: "Re Denley held that a purpose trust that directly or indirectly benefits identifiable persons can be valid. The court interpreted the employees as the beneficiaries — they could enforce their right to use the sports ground and prevent others from misusing it. This saved the trust as one for persons, not a pure purpose trust."
+  },
+
+  // ── CASE LAW ──
+  {
+    topic: "cases",
+    label: "Case Law",
+    q: "In Amos v ICBC (SCC), what was the two-part test established to determine whether an injury 'arises out of the ownership, use or operation' of a vehicle?",
+    opts: [
+      "Proximity test and foreseeability test",
+      "Purpose test (was the vehicle in typical vehicular use?) and causal link test (is there a non-incidental causal connection to the vehicle's use?)",
+      "But-for causation test and remoteness test",
+      "Intentional use test and direct causation test"
+    ],
+    ans: 1,
+    exp: "Amos established the two-part test: (1) Purpose test — did the accident involve the ordinary and well-known activities to which automobiles are put? (usually easily satisfied); (2) Causal link test — is there a nexus or causal connection (not necessarily proximate or direct) between the injuries and the ownership/use/operation of the vehicle that is more than merely incidental or fortuitous?"
+  },
+  {
+    topic: "cases",
+    label: "Case Law",
+    q: "The House of Lords decisions in Witlingham and Herbison corrected the overbroad application of Amos by holding that for third party liability coverage:",
+    opts: [
+      "The Amos two-part test no longer applies at all",
+      "There must be an unbroken chain of causation and the tortious act must be tied to using the vehicle as a vehicle",
+      "But-for causation is sufficient for liability coverage triggers",
+      "Only physical contact between vehicles can trigger auto insurance"
+    ],
+    ans: 1,
+    exp: "Witlingham and Herbison tightened the causation standard for liability coverage (as opposed to SABs). For liability cover, the tortious conduct must be tied to using the vehicle as a vehicle; there must be an unbroken chain of causation; and mere but-for causation is insufficient. An intervening act severable from vehicular use breaks the chain."
+  },
+  {
+    topic: "cases",
+    label: "Case Law",
+    q: "Keech v Sandford (1792) established what principle regarding trustees?",
+    opts: [
+      "A trustee can renew a lease on trust property for their own benefit if the beneficiary cannot",
+      "A trustee who personally acquires a lease on property related to the trust holds it on constructive trust for the beneficiaries",
+      "Trustees cannot invest in property adjacent to trust property",
+      "A trustee must always obtain court approval before renewing trust leases"
+    ],
+    ans: 1,
+    exp: "Keech v Sandford held that where a trustee could not renew a lease on behalf of the trust (the lessor refused), and the trustee renewed it personally, the trustee held the renewed lease on constructive trust for the beneficiaries. The trustee placed himself in a conflict of interest and could not profit from his fiduciary position — even where the trust itself could not have obtained the benefit."
+  },
+  {
+    topic: "cases",
+    label: "Case Law",
+    q: "Boardman v Phipps (House of Lords) is significant for establishing that:",
+    opts: [
+      "A solicitor can profit from trust information if the trust has also benefited",
+      "Breach of fiduciary duty requires proof of dishonest intent",
+      "A fiduciary who acts in good faith but profits from their position is still strictly liable",
+      "Account of profits is only available where the beneficiary has suffered a corresponding loss"
+    ],
+    ans: 2,
+    exp: "Boardman v Phipps established that fiduciary liability for profiting from position is strict — even a solicitor acting in good faith, whose actions actually benefited the trust, was liable. The irrelevance of good faith is the defining feature. Note: good faith defendants may be compensated for their skill and expenses in equity."
+  },
+  {
+    topic: "cases",
+    label: "Case Law",
+    q: "Regal (Hastings) v Gulliver held that directors who personally invested to take advantage of a corporate opportunity:",
+    opts: [
+      "Were entitled to keep their profits because the company could not have made the investment itself",
+      "Were required to disgorge their profits even though they acted in good faith",
+      "Were only liable if the company suffered a corresponding loss",
+      "Could retain profits with the consent of a majority of shareholders"
+    ],
+    ans: 1,
+    exp: "In Regal (Hastings) v Gulliver, directors invested personally in a subsidiary because the company lacked funds to do so itself. The House of Lords held they must disgorge all profits — it was irrelevant that they acted in good faith or that the company could not have taken the opportunity. A fiduciary cannot profit from their fiduciary position."
+  },
+  {
+    topic: "cases",
+    label: "Case Law",
+    q: "Peso Silver Mines v Cropper (SCC) distinguished Regal (Hastings) on what ground?",
+    opts: [
+      "The company had explicitly consented to the director's personal investment",
+      "The company had considered and legitimately rejected the opportunity before the director pursued it personally",
+      "The investment was made after the director retired from the company",
+      "The opportunity was not commercially related to the company's business"
+    ],
+    ans: 1,
+    exp: "Peso Silver Mines held that the corporate opportunity doctrine does not apply where the company has genuinely considered and rejected an opportunity. Once the company legitimately turns down an opportunity, it ceases to be a corporate opportunity, and the director is free to pursue it personally — provided they were not acting in an official capacity when they obtained the opportunity."
+  },
+  {
+    topic: "cases",
+    label: "Case Law",
+    q: "Citadel General Assurance v Lloyd's Bank of Canada (SCC) established the Canadian approach to 'knowing receipt' as:",
+    opts: [
+      "A form of equitable wrong requiring actual dishonesty",
+      "An instance of unjust enrichment requiring enrichment, deprivation, and constructive knowledge of the trust",
+      "A strict liability tort requiring no mental element",
+      "A personal remedy available only where the stranger still holds the property"
+    ],
+    ans: 1,
+    exp: "Citadel General held that knowing receipt in Canada is a claim for unjust enrichment: the plaintiff must prove enrichment + deprivation + no juristic reason + knowledge. Constructive knowledge (facts sufficient to put a reasonable person on notice) is sufficient — a lower threshold than knowing assistance. This matches the fact that the stranger has received a benefit at the plaintiff's expense."
+  }
+];
+
+// ── STATE ──
+let answered = {}; // { idx: true/false }
+let currentFilter = "all";
+let filteredIndices = [];
+
+// ── FILTER ──
+function getFiltered() {
+  if (currentFilter === "all") return QUESTIONS.map((_,i)=>i);
+  return QUESTIONS.map((_,i)=>i).filter(i => QUESTIONS[i].topic === currentFilter);
+}
+
+function updateFilter(filter) {
+  currentFilter = filter;
+  filteredIndices = getFiltered();
+  document.querySelectorAll('.tag-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === filter);
+  });
+  renderQuiz();
+}
+
+// ── RENDER ──
+function renderQuiz() {
+  filteredIndices = getFiltered();
+  const container = document.getElementById('quiz-container');
+  const summary = document.getElementById('summary');
+
+  // Count answered in filtered set
+  const answeredInFilter = filteredIndices.filter(i => i in answered);
+  const correctInFilter = filteredIndices.filter(i => answered[i] === true);
+
+  // Progress
+  const pct = filteredIndices.length ? Math.round(answeredInFilter.length / filteredIndices.length * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${answeredInFilter.length} of ${filteredIndices.length} answered`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  // Score
+  document.getElementById('score-display').textContent = correctInFilter.length;
+  document.getElementById('answered-display').textContent = answeredInFilter.length;
+
+  // Show summary if all answered
+  const allDone = filteredIndices.length > 0 && answeredInFilter.length === filteredIndices.length;
+  summary.classList.toggle('show', allDone);
+  container.style.display = allDone ? 'none' : 'flex';
+
+  if (allDone) {
+    renderSummary(correctInFilter.length, filteredIndices.length);
+    return;
+  }
+
+  container.innerHTML = '';
+  filteredIndices.forEach((qIdx, rank) => {
+    const q = QUESTIONS[qIdx];
+    const isAnswered = qIdx in answered;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.style.animationDelay = (rank * 0.04) + 's';
+
+    const optHtml = q.opts.map((o, i) => {
+      let cls = 'opt-btn';
+      if (isAnswered) {
+        cls += ' ' + (i === q.ans ? 'correct' : (answered[qIdx] === false && /* selected */ false ? 'wrong' : ''));
+      }
+      return `<button class="${cls}" ${isAnswered ? 'disabled' : ''} onclick="answer(${qIdx}, ${i}, event)">
+        <span class="opt-key">${String.fromCharCode(65+i)}</span>
+        <span>${o}</span>
+      </button>`;
+    });
+
+    // We store selected index in data attribute; need to track selected for coloring
+    card.innerHTML = `
+      <div class="q-header">
+        <span class="q-num">Q${rank+1}</span>
+        <p class="q-text">${q.q}</p>
+        <span class="q-topic">${q.label}</span>
+      </div>
+      <div class="q-options" id="opts-${qIdx}">${optHtml.join('')}</div>
+      <div class="q-explanation ${isAnswered ? 'show' : ''}" id="exp-${qIdx}">
+        ${isAnswered ? `<strong>${answered[qIdx] ? '✓ Correct.' : '✗ Incorrect.'}</strong> ${q.exp}` : q.exp}
+      </div>`;
+    container.appendChild(card);
+
+    // Re-color selected wrong option if answered
+    if (isAnswered) {
+      const sel = card.getAttribute('data-selected');
+      // handled below via stored selected index
+    }
+  });
+
+  // Restore wrong coloring from stored selections
+  filteredIndices.forEach(qIdx => {
+    if (qIdx in answered) {
+      const stored = selectedMap[qIdx];
+      if (stored !== undefined && stored !== QUESTIONS[qIdx].ans) {
+        const optsEl = document.getElementById('opts-' + qIdx);
+        if (optsEl) {
+          optsEl.children[stored]?.classList.add('wrong');
+        }
+      }
+    }
+  });
+}
+
+const selectedMap = {}; // { qIdx: selectedOptionIndex }
+
+function answer(qIdx, selectedIdx, e) {
+  if (qIdx in answered) return;
+  const q = QUESTIONS[qIdx];
+  const isCorrect = selectedIdx === q.ans;
+  answered[qIdx] = isCorrect;
+  selectedMap[qIdx] = selectedIdx;
+
+  // Color options
+  const optsEl = document.getElementById('opts-' + qIdx);
+  Array.from(optsEl.children).forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === selectedIdx) btn.classList.add('wrong');
+  });
+
+  // Show explanation
+  const expEl = document.getElementById('exp-' + qIdx);
+  expEl.innerHTML = `<strong>${isCorrect ? '✓ Correct.' : '✗ Incorrect.'}</strong> ${q.exp}`;
+  expEl.classList.add('show');
+
+  // Update score
+  const filteredAnswered = filteredIndices.filter(i => i in answered);
+  const filteredCorrect = filteredIndices.filter(i => answered[i] === true);
+  document.getElementById('score-display').textContent = filteredCorrect.length;
+  document.getElementById('answered-display').textContent = filteredAnswered.length;
+
+  const pct = Math.round(filteredAnswered.length / filteredIndices.length * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${filteredAnswered.length} of ${filteredIndices.length} answered`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  // Check if all done
+  if (filteredAnswered.length === filteredIndices.length) {
+    setTimeout(() => {
+      document.getElementById('quiz-container').style.display = 'none';
+      document.getElementById('summary').classList.add('show');
+      renderSummary(filteredCorrect.length, filteredIndices.length);
+    }, 800);
+  }
+}
+
+function renderSummary(correct, total) {
+  const pct = Math.round(correct / total * 100);
+  document.getElementById('final-score').innerHTML = `${correct}<span>/${total}</span>`;
+  let grade, msg;
+  if (pct >= 90) { grade = 'Distinction'; msg = 'Exceptional command of trusts law. Exam ready.'; }
+  else if (pct >= 80) { grade = 'Merit'; msg = 'Strong understanding. Review weaker topics and you are well prepared.'; }
+  else if (pct >= 70) { grade = 'Pass'; msg = 'Solid foundation. Focus on the areas where you stumbled.'; }
+  else if (pct >= 55) { grade = 'Borderline'; msg = 'Revisit the material — particularly case law and tracing rules.'; }
+  else { grade = 'Needs Work'; msg = 'Return to the notes and try each topic section separately.'; }
+  document.getElementById('final-grade').textContent = `${grade} — ${pct}%`;
+  document.getElementById('final-msg').textContent = msg;
+}
+
+function restart() {
+  Object.keys(answered).forEach(k => delete answered[k]);
+  Object.keys(selectedMap).forEach(k => delete selectedMap[k]);
+  document.getElementById('summary').classList.remove('show');
+  renderQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── INIT ──
+document.getElementById('filter-group').addEventListener('click', e => {
+  const btn = e.target.closest('.tag-btn');
+  if (btn) updateFilter(btn.dataset.filter);
+});
+
+filteredIndices = getFiltered();
+renderQuiz();
+</script>
+</body>
+</html>
